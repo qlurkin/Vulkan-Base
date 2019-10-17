@@ -1,0 +1,4 @@
+*.o
+VulkanLab
+out.log
+.vscode
