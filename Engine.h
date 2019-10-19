@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -59,7 +60,10 @@ public:
 	VkCommandPool getCommandPool();
 	VkRenderPass getRenderPass();
 	VkQueue getGraphicsQueue();
-
+	uint32_t getWidth();
+	uint32_t getHeight();
+	uint32_t getCurrentImage();
+	VkDescriptorPool getDescriptorPool();
 
 private:
 	GLFWwindow* window;
@@ -87,6 +91,7 @@ private:
 	//VkPipeline graphicsPipeline;
 
 	VkCommandPool commandPool;
+	VkDescriptorPool descriptorPool;
 
 	std::vector<VkBuffer> vertexBuffers;
 	std::vector<VkDeviceMemory> vertexBufferMemories;
@@ -97,6 +102,7 @@ private:
 	std::vector<VkSemaphore> renderFinishedSemaphores;
 	std::vector<VkFence> inFlightFences;
 	size_t currentFrame = 0;
+	uint32_t imageIndex;
 
 	std::string vertexShaderFilename;
 	std::string fragmentShaderFilename;
@@ -123,6 +129,8 @@ private:
 	void createImageViews();
 	void createFramebuffers();
 	void createCommandPool();
+	void createDescriptorPool();
+	void createDescriptorSets();
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	void createSyncObjects();
 	void drawFrame();

@@ -1,8 +1,8 @@
 #include "CommandBuffer.h"
 
-CommandBuffer::CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, GraphicsPipeline* pipeline) : CommandBuffer(vertexBuffer, 1, indexBuffer, pipeline) {}
+CommandBuffer::CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline) : CommandBuffer(vertexBuffer, 1, indexBuffer, uniformBuffer, pipeline) {}
 
-CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, GraphicsPipeline* pipeline) : pipeline(pipeline) {
+CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline) : pipeline(pipeline) {
 	Engine* engine = pipeline->getEngine();
 	commandBuffers.resize(engine->getSwapChainBuffersCount());
 
@@ -36,21 +36,18 @@ CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersC
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
 
-		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, *pipeline);
-		
 		VkBuffer legacyVertexBuffers[vertexBuffersCount];
 		for(size_t j = 0; j < vertexBuffersCount; j++) {
 			legacyVertexBuffers[j] = vertexBuffers[j];
 		}
 
-		VkDeviceSize offsets[] = {0};
-		vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, legacyVertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffers[i], *indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-		
-		//vkCmdDraw(commandBuffers[i], vertex, 1, 0, 0);
-		vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indexBuffer->getCount()), 1, 0, 0, 0);
-		//vkCmdDrawIndexed(commandBuffers[i], 6, 1, 0, 0, 0);
+		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, *pipeline);
+			VkDeviceSize offsets[] = {0};
+			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, legacyVertexBuffers, offsets);
+			vkCmdBindIndexBuffer(commandBuffers[i], *indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &(uniformBuffer->getDescriptorSets()[i]), 0, nullptr);
+			vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indexBuffer->getCount()), 1, 0, 0, 0);
 		vkCmdEndRenderPass(commandBuffers[i]);
 		
 		if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

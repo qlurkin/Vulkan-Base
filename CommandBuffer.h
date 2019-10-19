@@ -7,11 +7,12 @@
 class GraphicsPipeline;
 class VertexBuffer;
 class IndexBuffer;
+class UniformBuffer;
 
 class CommandBuffer {
 	public:
-	CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, GraphicsPipeline* pipeline);
-	CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, GraphicsPipeline* pipeline);
+	CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline);
+	CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline);
 	~CommandBuffer();
 	VkCommandBuffer operator[](std::size_t i);
 

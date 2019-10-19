@@ -2,3 +2,4 @@
 VulkanLab
 out.log
 .vscode
+*.spv

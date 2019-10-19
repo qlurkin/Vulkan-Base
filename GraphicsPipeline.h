@@ -9,6 +9,7 @@ class Shader;
 class CommandBuffer;
 class VertexBuffer;
 class CommandPool;
+class UniformBuffer;
 
 class GraphicsPipeline {
 	public:
@@ -16,6 +17,8 @@ class GraphicsPipeline {
 	~GraphicsPipeline();
 	operator VkPipeline();
 	Engine* getEngine();
+	VkDescriptorSetLayout getDescriptorSetLayout();
+	VkPipelineLayout getPipelineLayout();
 
 	private:
 	Engine* engine;

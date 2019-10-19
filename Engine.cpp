@@ -81,13 +81,13 @@ void Engine::initVulkan() {
 	createFramebuffers();
 	createCommandPool();
 	createSyncObjects();
+	createDescriptorPool();
 }
 
 void Engine::mainLoop() {
 	LOG << "Mainloop Started" << ENDL;
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
-		setupFrame();
 		drawFrame();
 	}
 
@@ -109,6 +109,7 @@ void Engine::cleanupSwapChain() {
 	}
 
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
+	vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 }
 
 void Engine::cleanup() {
@@ -160,6 +161,7 @@ void Engine::recreateSwapChain() {
 	createFramebuffers();
 	createRenderPass();
 	initPipelines();
+	createDescriptorPool();
 }
 
 void Engine::createInstance() {
@@ -473,7 +475,6 @@ void Engine::createSyncObjects() {
 void Engine::drawFrame() {
 	vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -482,6 +483,8 @@ void Engine::drawFrame() {
 	} else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
+
+	setupFrame();
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -746,4 +749,36 @@ VkQueue Engine::getGraphicsQueue() {
 
 void Engine::add(CommandBuffer* commandBuffer) {
 	commandBuffers.push_back(commandBuffer);
+}
+
+uint32_t Engine::getWidth() {
+	return getExtent().width;
+}
+
+uint32_t Engine::getHeight() {
+	return getExtent().height;
+}
+
+uint32_t Engine::getCurrentImage() {
+	return imageIndex;
+}
+
+void Engine::createDescriptorPool() {
+	VkDescriptorPoolSize poolSize = {};
+	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolSize.descriptorCount = static_cast<uint32_t>(swapChainImages.size());
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = 1;
+	poolInfo.pPoolSizes = &poolSize;
+	poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size());
+
+	if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create descriptor pool!");
+	}
+}
+
+VkDescriptorPool Engine::getDescriptorPool() {
+	return descriptorPool;
 }
