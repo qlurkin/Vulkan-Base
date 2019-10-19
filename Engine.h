@@ -25,6 +25,7 @@
 #include "CommandBuffer.h"
 #include "IndexBuffer.h"
 #include "UniformBuffer.h"
+#include "Texture.h"
 #include "Log.h"
 
 struct QueueFamilyIndices {
