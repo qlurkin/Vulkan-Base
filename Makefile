@@ -3,7 +3,7 @@ CFLAGS = -std=c++17
 LDFLAGS = -lvulkan -lglfw -lstdc++
 CMD = g++ $(CFLAGS)
 
-OBJECTS = Engine.o Application.o Shader.o VertexInputState.o GraphicsPipeline.o buffers.o commands.o VertexBuffer.o IndexBuffer.o CommandBuffer.o UniformBuffer.o Texture.o Log.o
+OBJECTS = Engine.o Application.o Shader.o VertexInputState.o GraphicsPipeline.o buffers.o commands.o VertexBuffer.o IndexBuffer.o CommandBuffer.o UniformBuffer.o Texture.o DescriptorSetLayout.o DescriptorSet.o Log.o
 
 all: $(EXE) shaders
 
@@ -48,6 +48,12 @@ UniformBuffer.o: UniformBuffer.cpp
 
 Texture.o: Texture.cpp
 	$(CMD) -o Texture.o -c Texture.cpp
+
+DescriptorSetLayout.o: DescriptorSetLayout.cpp
+	$(CMD) -o DescriptorSetLayout.o -c DescriptorSetLayout.cpp
+
+DescriptorSet.o: DescriptorSet.cpp
+	$(CMD) -o DescriptorSet.o -c DescriptorSet.cpp
 
 shaders: shaders/frag.spv shaders/vert.spv
 

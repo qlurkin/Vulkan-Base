@@ -7,16 +7,17 @@
 class GraphicsPipeline;
 class VertexBuffer;
 class IndexBuffer;
-class UniformBuffer;
+class DescriptorSet;
 
 class CommandBuffer {
 	public:
-	CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline);
-	CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline);
+	CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, DescriptorSet* descriptorSet, GraphicsPipeline* pipeline);
+	CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet* descriptorSet, GraphicsPipeline* pipeline);
 	~CommandBuffer();
 	VkCommandBuffer operator[](std::size_t i);
 
 	private:
+	DescriptorSet* descriptorSet;
 	GraphicsPipeline* pipeline;
 	std::vector<VkCommandBuffer> commandBuffers;
 };
@@ -24,3 +25,4 @@ class CommandBuffer {
 #include "GraphicsPipeline.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "DescriptorSet.h"

@@ -1,8 +1,8 @@
 #include "CommandBuffer.h"
 
-CommandBuffer::CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline) : CommandBuffer(vertexBuffer, 1, indexBuffer, uniformBuffer, pipeline) {}
+CommandBuffer::CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet* descriptorSet, GraphicsPipeline* pipeline) : CommandBuffer(vertexBuffer, 1, indexBuffer, descriptorSet, pipeline) {}
 
-CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, UniformBuffer* uniformBuffer, GraphicsPipeline* pipeline) : pipeline(pipeline) {
+CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, DescriptorSet* descriptorSet, GraphicsPipeline* pipeline) : pipeline(pipeline), descriptorSet(descriptorSet) {
 	Engine* engine = pipeline->getEngine();
 	commandBuffers.resize(engine->getSwapChainBuffersCount());
 
@@ -41,12 +41,14 @@ CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersC
 			legacyVertexBuffers[j] = vertexBuffers[j];
 		}
 
+		VkDescriptorSet legacyDescriptorSet = (*descriptorSet)[i];
+
 		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, *pipeline);
 			VkDeviceSize offsets[] = {0};
 			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, legacyVertexBuffers, offsets);
 			vkCmdBindIndexBuffer(commandBuffers[i], *indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &(uniformBuffer->getDescriptorSets()[i]), 0, nullptr);
+			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1, &legacyDescriptorSet, 0, nullptr);
 			vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indexBuffer->getCount()), 1, 0, 0, 0);
 		vkCmdEndRenderPass(commandBuffers[i]);
 		

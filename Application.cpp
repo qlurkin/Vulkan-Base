@@ -40,11 +40,17 @@ class Application : public Engine {
 			.addAttribute(VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, pos))
 			.addAttribute(VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
 
-		pipeline = new GraphicsPipeline(vertexFormat, vertexShader, fragmentShader, this);
+		descriptorSetLayout = new DescriptorSetLayout(this);
+		descriptorSetLayout->addUniform().end();
+
+		pipeline = new GraphicsPipeline(vertexFormat, vertexShader, fragmentShader, *descriptorSetLayout, this);
 
 		uniformBuffer = new UniformBuffer(sizeof(UniformBufferObject), pipeline);
 
-		commandBuffer = new CommandBuffer(vertexBuffer, indexBuffer, uniformBuffer, pipeline);
+		descriptorSet = new DescriptorSet(*descriptorSetLayout, this);
+		descriptorSet->setUniformBuffer(*uniformBuffer, 0);
+
+		commandBuffer = new CommandBuffer(vertexBuffer, indexBuffer, descriptorSet, pipeline);
 	}
 
 	void setupFrame() {
@@ -65,6 +71,8 @@ class Application : public Engine {
 	}
 
 	void cleanupPipelines() {
+		delete descriptorSet;
+		delete descriptorSetLayout;
 		delete commandBuffer;
 		delete uniformBuffer;
 		delete pipeline;
@@ -81,6 +89,8 @@ class Application : public Engine {
 	IndexBuffer* indexBuffer;
 	CommandBuffer* commandBuffer;
 	UniformBuffer* uniformBuffer;
+	DescriptorSetLayout* descriptorSetLayout;
+	DescriptorSet* descriptorSet;
 };
 
 int main() {

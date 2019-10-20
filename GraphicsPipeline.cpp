@@ -3,11 +3,9 @@
 
 #include <vector>
 
-GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& vertexShader, Shader& fragmentShader, Engine* engine) : engine(engine) {
+GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& vertexShader, Shader& fragmentShader, DescriptorSetLayout& descriptorSetLayout, Engine* engine) : engine(engine) {
 	//SwapChain& swapChain = *engine;
 	//CommandPool& commandPool = *engine;
-
-	createDescriptorSetLayout();
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
 	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -100,10 +98,12 @@ GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& ve
 	dynamicState.dynamicStateCount = 2;
 	dynamicState.pDynamicStates = dynamicStates;
 
+	VkDescriptorSetLayout setLayout = descriptorSetLayout;
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+	pipelineLayoutInfo.pSetLayouts = &setLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
@@ -141,7 +141,6 @@ GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& ve
 GraphicsPipeline::~GraphicsPipeline() {
 	vkDestroyPipeline(engine->getDevice(), graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(engine->getDevice(), pipelineLayout, nullptr);
-	vkDestroyDescriptorSetLayout(engine->getDevice(), descriptorSetLayout, nullptr);
 	
 	LOG << "GraphicsPipeline Destroyed" << ENDL;
 }
@@ -152,28 +151,6 @@ GraphicsPipeline::operator VkPipeline() {
 
 Engine* GraphicsPipeline::getEngine() {
 	return engine;
-}
-
-void GraphicsPipeline::createDescriptorSetLayout() {
-	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
-
-	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = 1;
-	layoutInfo.pBindings = &uboLayoutBinding;
-
-	if (vkCreateDescriptorSetLayout(engine->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create descriptor set layout!");
-	}
-}
-
-VkDescriptorSetLayout GraphicsPipeline::getDescriptorSetLayout() {
-	return descriptorSetLayout;
 }
 
 VkPipelineLayout GraphicsPipeline::getPipelineLayout() {

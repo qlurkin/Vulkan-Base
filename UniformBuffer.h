@@ -13,14 +13,13 @@ class UniformBuffer {
 	void setData(void* dataStart);
 	VkBuffer operator[](std::size_t i);
 	std::vector<VkDescriptorSet>& getDescriptorSets();
+	VkDeviceSize getSize();
 
 	private:
 	Engine* engine;
 	VkDeviceSize bufferSize;
 	std::vector<VkBuffer> uniformBuffers;
 	std::vector<VkDeviceMemory> uniformBuffersMemory;
-	std::vector<VkDescriptorSet> descriptorSets;
-	void createDescriptorSets(VkDescriptorSetLayout descriptorSetLayout);
 };
 
 #include "Engine.h"
