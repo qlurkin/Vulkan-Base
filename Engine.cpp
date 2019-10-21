@@ -188,11 +188,11 @@ void Engine::recreateSwapChain() {
 
 	createSwapChain();
 	createImageViews();
+	createRenderPass();
 	createDepthResources();
 	createFramebuffers();
-	createRenderPass();
-	initPipelines();
 	createDescriptorPool();
+	initPipelines();
 }
 
 void Engine::createInstance() {
