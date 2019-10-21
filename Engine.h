@@ -98,6 +98,10 @@ private:
 	VkCommandPool commandPool;
 	VkDescriptorPool descriptorPool;
 
+	VkImage depthImage;
+	VkDeviceMemory depthImageMemory;
+	VkImageView depthImageView;
+
 	std::vector<VkBuffer> vertexBuffers;
 	std::vector<VkDeviceMemory> vertexBufferMemories;
 
@@ -136,6 +140,7 @@ private:
 	void createCommandPool();
 	void createDescriptorPool();
 	void createDescriptorSets();
+	void createDepthResources();
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	void createSyncObjects();
 	void drawFrame();

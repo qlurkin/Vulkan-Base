@@ -46,7 +46,7 @@ Texture::~Texture() {
 }
 
 void Texture::createTextureImageView() {
-	textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_UNORM, engine);
+	textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, engine);
 }
 
 void Texture::createTextureSampler() {
