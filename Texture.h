@@ -9,6 +9,8 @@ class Texture {
 	public:
 	Texture(const std::string& filename, Engine* engine);
 	~Texture();
+	VkImageView getImageView();
+	VkSampler getSampler();
 
 	private:
 	Engine* engine;

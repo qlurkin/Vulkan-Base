@@ -2,8 +2,9 @@
 #include <chrono>
 
 struct Vertex {
-	glm::vec2 pos;
+	glm::vec3 pos;
 	glm::vec3 color;
+	glm::vec2 texCoord;
 };
 
 struct UniformBufferObject {
@@ -17,18 +18,25 @@ class Application : public Engine {
 	void setup() {
 
 		std::vector<Vertex> vertices = {
-			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+			{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+
+			{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 		};
 
 		std::vector<uint16_t> indices = {
-			0, 1, 2, 2, 3, 0
+			0, 1, 2, 2, 3, 0,
+			4, 5, 6, 6, 7, 4
 		};
 
 		vertexBuffer = new VertexBuffer(vertices.data(), vertices.size(), sizeof(vertices[0]), this);
 		indexBuffer = new IndexBuffer(indices.data(), indices.size(), sizeof(indices[0]), this);
+		texture = new Texture("textures/texture.jpg", this);
 	}
 
 	void initPipelines() {
@@ -37,11 +45,12 @@ class Application : public Engine {
 
 		VertexInputState vertexFormat(sizeof(Vertex));
 		vertexFormat
-			.addAttribute(VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, pos))
-			.addAttribute(VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
+			.addAttribute(VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos))
+			.addAttribute(VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color))
+			.addAttribute(VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
 
 		descriptorSetLayout = new DescriptorSetLayout(this);
-		descriptorSetLayout->addUniform().end();
+		descriptorSetLayout->addUniform().addTexture().end();
 
 		pipeline = new GraphicsPipeline(vertexFormat, vertexShader, fragmentShader, *descriptorSetLayout, this);
 
@@ -49,6 +58,7 @@ class Application : public Engine {
 
 		descriptorSet = new DescriptorSet(*descriptorSetLayout, this);
 		descriptorSet->setUniformBuffer(*uniformBuffer, 0);
+		descriptorSet->setTexture(*texture, 1);
 
 		commandBuffer = new CommandBuffer(vertexBuffer, indexBuffer, descriptorSet, pipeline);
 	}
@@ -81,6 +91,7 @@ class Application : public Engine {
 	void teardown() {
 		delete vertexBuffer;
 		delete indexBuffer;
+		delete texture;
 	}
 
 	private:
@@ -91,6 +102,7 @@ class Application : public Engine {
 	UniformBuffer* uniformBuffer;
 	DescriptorSetLayout* descriptorSetLayout;
 	DescriptorSet* descriptorSet;
+	Texture* texture;
 };
 
 int main() {

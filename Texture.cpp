@@ -33,6 +33,9 @@ Texture::Texture(const std::string& filename, Engine* engine) : filename(filenam
 
 	vkDestroyBuffer(engine->getDevice(), stagingBuffer, nullptr);
 	vkFreeMemory(engine->getDevice(), stagingBufferMemory, nullptr);
+
+	createTextureImageView();
+	createTextureSampler();
 }
 
 Texture::~Texture() {
@@ -68,4 +71,12 @@ void Texture::createTextureSampler() {
 	if (vkCreateSampler(engine->getDevice(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create texture sampler!");
 	}
+}
+
+VkImageView Texture::getImageView() {
+	return textureImageView;
+}
+
+VkSampler Texture::getSampler() {
+	return textureSampler;
 }
