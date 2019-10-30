@@ -1,14 +1,15 @@
 #include "DescriptorSet.h"
 
 DescriptorSet::DescriptorSet(DescriptorSetLayout& descriptorSetLayout, Engine* engine) : engine(engine), descriptorSetLayout(descriptorSetLayout) {
-	std::vector<VkDescriptorSetLayout> layouts(engine->getSwapChainBuffersCount(), descriptorSetLayout);
+	SwapChain& swapChain = engine->getSwapChain();
+	std::vector<VkDescriptorSetLayout> layouts(swapChain.getSwapChainBuffersCount(), descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = engine->getDescriptorPool();
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(engine->getSwapChainBuffersCount());
+	allocInfo.descriptorPool = swapChain.getDescriptorPool();
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChain.getSwapChainBuffersCount());
 	allocInfo.pSetLayouts = layouts.data();
 
-	descriptorSets.resize(engine->getSwapChainBuffersCount());
+	descriptorSets.resize(swapChain.getSwapChainBuffersCount());
 	if (vkAllocateDescriptorSets(engine->getDevice(), &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
@@ -17,8 +18,8 @@ DescriptorSet::DescriptorSet(DescriptorSetLayout& descriptorSetLayout, Engine* e
 }
 
 DescriptorSet& DescriptorSet::setUniformBuffer(UniformBuffer& uniformBuffer, uint32_t binding) {
-
-	for (size_t i = 0; i < engine->getSwapChainBuffersCount(); i++) {
+	SwapChain& swapChain = engine->getSwapChain();
+	for (size_t i = 0; i < swapChain.getSwapChainBuffersCount(); i++) {
 		
 		VkDescriptorBufferInfo bufferInfo = {};
 		bufferInfo.buffer = uniformBuffer[i];
@@ -41,7 +42,8 @@ DescriptorSet& DescriptorSet::setUniformBuffer(UniformBuffer& uniformBuffer, uin
 }
 
 DescriptorSet& DescriptorSet::setTexture(Texture& texture, uint32_t binding) { 
-	for (size_t i = 0; i < engine->getSwapChainBuffersCount(); i++) {
+	SwapChain& swapChain = engine->getSwapChain();
+	for (size_t i = 0; i < swapChain.getSwapChainBuffersCount(); i++) {
 		
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

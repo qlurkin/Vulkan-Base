@@ -37,9 +37,7 @@ class Application : public Engine {
 		vertexBuffer = new VertexBuffer(vertices.data(), vertices.size(), sizeof(vertices[0]), this);
 		indexBuffer = new IndexBuffer(indices.data(), indices.size(), sizeof(indices[0]), this);
 		texture = new Texture("textures/texture.jpg", this);
-	}
 
-	void initPipelines() {
 		Shader vertexShader("shaders/vert.spv", this);
 		Shader fragmentShader("shaders/frag.spv", this);
 
@@ -60,7 +58,9 @@ class Application : public Engine {
 		descriptorSet->setUniformBuffer(*uniformBuffer, 0);
 		descriptorSet->setTexture(*texture, 1);
 
+		LOG << "AVANT FOIRAGE" << ENDL;
 		commandBuffer = new CommandBuffer(vertexBuffer, indexBuffer, descriptorSet, pipeline);
+		LOG << "APRES FOIRAGE" << ENDL;
 	}
 
 	void setupFrame() {
@@ -77,18 +77,15 @@ class Application : public Engine {
 
 		uniformBuffer->setData(&ubo);
 
-		add(commandBuffer);
+		add(*commandBuffer);
 	}
 
-	void cleanupPipelines() {
+	void teardown() {
 		delete descriptorSet;
 		delete descriptorSetLayout;
 		delete commandBuffer;
 		delete uniformBuffer;
 		delete pipeline;
-	}
-
-	void teardown() {
 		delete vertexBuffer;
 		delete indexBuffer;
 		delete texture;

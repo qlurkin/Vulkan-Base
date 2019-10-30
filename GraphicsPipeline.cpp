@@ -4,7 +4,7 @@
 #include <vector>
 
 GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& vertexShader, Shader& fragmentShader, DescriptorSetLayout& descriptorSetLayout, Engine* engine) : engine(engine) {
-	//SwapChain& swapChain = *engine;
+	SwapChain& swapChain = engine->getSwapChain();
 	//CommandPool& commandPool = *engine;
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
@@ -29,14 +29,14 @@ GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& ve
 	VkViewport viewport = {};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float) engine->getExtent().width;
-	viewport.height = (float) engine->getExtent().height;
+	viewport.width = (float) swapChain.getExtent().width;
+	viewport.height = (float) swapChain.getExtent().height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor = {};
 	scissor.offset = {0, 0};
-	scissor.extent = engine->getExtent();
+	scissor.extent = swapChain.getExtent();
 
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -138,7 +138,7 @@ GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& ve
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = nullptr; // Optional
 	pipelineInfo.layout = pipelineLayout;
-	pipelineInfo.renderPass = engine->getRenderPass();
+	pipelineInfo.renderPass = swapChain.getRenderPass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional

@@ -4,7 +4,8 @@ CommandBuffer::CommandBuffer(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffe
 
 CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersCount, IndexBuffer* indexBuffer, DescriptorSet* descriptorSet, GraphicsPipeline* pipeline) : pipeline(pipeline), descriptorSet(descriptorSet) {
 	Engine* engine = pipeline->getEngine();
-	commandBuffers.resize(engine->getSwapChainBuffersCount());
+	SwapChain& swapChain = engine->getSwapChain();
+	commandBuffers.resize(swapChain.getSwapChainBuffersCount());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -28,10 +29,10 @@ CommandBuffer::CommandBuffer(VertexBuffer vertexBuffers[], size_t vertexBuffersC
 
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = engine->getRenderPass();
-		renderPassInfo.framebuffer = engine->getSwapChainBuffer(i);
+		renderPassInfo.renderPass = swapChain.getRenderPass();
+		renderPassInfo.framebuffer = swapChain.getSwapChainBuffer(i);
 		renderPassInfo.renderArea.offset = {0, 0};
-		renderPassInfo.renderArea.extent = engine->getExtent();
+		renderPassInfo.renderArea.extent = swapChain.getExtent();
 
 		std::array<VkClearValue, 2> clearValues = {};
 		clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
