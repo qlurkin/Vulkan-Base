@@ -2,8 +2,8 @@
 #include "Log.h"
 #include "buffers.h"
 
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const int WIDTH = 1024;
+const int HEIGHT = 768;
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
@@ -81,10 +81,11 @@ void Engine::initWindow() {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-	glfwSetWindowUserPointer(window, this);
-	glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+	//glfwSetWindowUserPointer(window, this);
+	//glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
 void Engine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {

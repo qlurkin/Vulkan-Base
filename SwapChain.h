@@ -13,8 +13,8 @@ class SwapChainObserver {
 	SwapChainObserver(SwapChain& swapChain);
 	virtual ~SwapChainObserver();
 	virtual void cleanup() = 0;
-	virtual void creation(SwapChain& swapchain) = 0;
-	SwapChain& getSwapchain();
+	virtual void creation() = 0;
+	SwapChain& getSwapChain();
 
 	private:
 	SwapChain& swapChain;

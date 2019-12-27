@@ -3,9 +3,8 @@
 
 #include <vector>
 
-GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& vertexShader, Shader& fragmentShader, DescriptorSetLayout& descriptorSetLayout, Engine* engine) : engine(engine) {
+GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& vertexShader, Shader& fragmentShader, DescriptorSetLayout& descriptorSetLayout, Engine* engine) : SwapChainObserver(engine->getSwapChain()) , engine(engine) {
 	SwapChain& swapChain = engine->getSwapChain();
-	//CommandPool& commandPool = *engine;
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
 	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -151,8 +150,7 @@ GraphicsPipeline::GraphicsPipeline(VertexInputState vertexInputState, Shader& ve
 }
 
 GraphicsPipeline::~GraphicsPipeline() {
-	vkDestroyPipeline(engine->getDevice(), graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(engine->getDevice(), pipelineLayout, nullptr);
+	cleanup();
 	
 	LOG << "GraphicsPipeline Destroyed" << ENDL;
 }
@@ -167,4 +165,13 @@ Engine* GraphicsPipeline::getEngine() {
 
 VkPipelineLayout GraphicsPipeline::getPipelineLayout() {
 	return pipelineLayout;
+}
+
+void GraphicsPipeline::cleanup() {
+	vkDestroyPipeline(engine->getDevice(), graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(engine->getDevice(), pipelineLayout, nullptr);
+}
+
+void GraphicsPipeline::creation() {
+
 }

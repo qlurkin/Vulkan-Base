@@ -34,7 +34,7 @@ SwapChainObserver::~SwapChainObserver() {
 	swapChain.unsubscribe(this);
 }
 
-SwapChain& SwapChainObserver::getSwapchain() {
+SwapChain& SwapChainObserver::getSwapChain() {
 	return swapChain;
 }
 
@@ -79,7 +79,7 @@ void SwapChain::NotifyCreation() {
 
 	for(;itb!=ite;++itb)
 	{
-		(*itb)->creation(*this);
+		(*itb)->creation();
 	}
 }
 

@@ -58,9 +58,7 @@ class Application : public Engine {
 		descriptorSet->setUniformBuffer(*uniformBuffer, 0);
 		descriptorSet->setTexture(*texture, 1);
 
-		LOG << "AVANT FOIRAGE" << ENDL;
 		commandBuffer = new CommandBuffer(vertexBuffer, indexBuffer, descriptorSet, pipeline);
-		LOG << "APRES FOIRAGE" << ENDL;
 	}
 
 	void setupFrame() {

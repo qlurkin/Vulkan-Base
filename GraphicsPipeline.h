@@ -11,13 +11,17 @@ class VertexBuffer;
 class CommandPool;
 class DescriptorSetLayout;
 
-class GraphicsPipeline {
+#include "SwapChain.h"
+
+class GraphicsPipeline : public SwapChainObserver {
 	public:
 	GraphicsPipeline(VertexInputState vertexInputState, Shader& vertexShader, Shader& fragmentShader, DescriptorSetLayout& descriptorSetLayout, Engine* engine);
 	~GraphicsPipeline();
 	operator VkPipeline();
 	Engine* getEngine();
 	VkPipelineLayout getPipelineLayout();
+	virtual void cleanup();
+	virtual void creation();
 
 	private:
 	Engine* engine;
